@@ -19,24 +19,31 @@ app.post('/sign-up', (req, res) => {
     const user = req.body;
     if (user.username === '' || user.avatar === ''){
         res.status(400).send('Todos os campos são obrigatórios!');
+    } else {
+        users.push(user);
+        res.status(201).send('OK');
     }
-    users.push(user);
-    res.status(201).send('OK');
 });
 
 app.post('/tweets', (req, res) => {
     const tweet = req.body;
     if (tweet.username === '' || tweet.tweet === ''){
         res.status(400).send('Todos os campos são obrigatórios!')
+    } else {
+        tweets.push(tweet);
+        res.status(201).send('OK');        
     }
-    tweets.push(tweet);
-    res.status(201).send('OK');
 });
 
 app.get('/tweets', (req, res) => {
-    let last10 = getTweets(0,9);
-    last10 = last10.map(addAvatar);
-    res.send(last10.reverse());
+    const page = Number(req.query.page);
+    if (isNaN(page) || page <= 0){
+        res.status(400).send('Informe uma página válida!');
+    } else {
+        let tweetsList = getTweets(req.query.page);
+        tweetsList = tweetsList.map(addAvatar);
+        res.send(tweetsList.reverse());
+    }
 });
 
 app.get('/tweets/:USERNAME', (req, res) => {
@@ -46,7 +53,10 @@ app.get('/tweets/:USERNAME', (req, res) => {
     res.send(userTweets.reverse());
 })
 
-function getTweets(from, to) {
+function getTweets(page) {
+    const pageNum = Number(page)-1;
+    const from = 0 + 10*pageNum;
+    const to = 9 + 10*pageNum;
     const arr = tweets.filter((value, index) => index <= tweets.length-from && index >= tweets.length-from-to);
     return arr
 };
