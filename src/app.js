@@ -5,46 +5,56 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const users = [{   
+const users = [{
+    id: 0,
     username: "bobesponja",
     avatar: "https://super.abril.com.br/wp-content/uploads/2020/09/04-09_gato_SITE.jpg?quality=70&strip=info"
 }];
 
-const tweets = [{   
+const tweets = [{
+    id: 0,  
     username: "bobesponja",
     tweet: "eu amo o hub"
 }];
 
 app.post('/sign-up', (req, res) => {
-    const user = req.body;
-    if (user.username === '' || user.avatar === ''){
+    const { username, avatar} = req.body;
+    if (!username || username === '' || !avatar || avatar === ''){
         res.status(400).send('Todos os campos são obrigatórios!');
-    } else {
-        users.push(user);
-        res.status(201).send('OK');
+        return;
     }
+    users.push({
+        id: users.length,
+        username,
+        avatar
+    });
+    res.status(201).send('OK');
 });
 
 app.post('/tweets', (req, res) => {
-    const tweet = req.body;
-    tweet.username = req.headers.user;
-    if (tweet.username === '' || tweet.tweet === ''){
-        res.status(400).send('Todos os campos são obrigatórios!')
-    } else {
-        tweets.push(tweet);
-        res.status(201).send('OK');        
+    const {tweet} = req.body;
+    const username = req.headers.user;
+    if (!username || username === '' || !tweet || tweet === ''){
+        res.status(400).send('Todos os campos são obrigatórios!');
+        return;
     }
+    tweets.push({
+        id: tweets.length,
+        username,
+        tweet
+    });
+    res.status(201).send(tweets);        
 });
 
 app.get('/tweets', (req, res) => {
     const page = Number(req.query.page);
     if (isNaN(page) || page <= 0){
         res.status(400).send('Informe uma página válida!');
-    } else {
-        let tweetsList = getTweets(req.query.page);
-        tweetsList = tweetsList.map(addAvatar);
-        res.send(tweetsList.reverse());
+        return;
     }
+    let tweetsList = getTweets(req.query.page);
+    tweetsList = tweetsList.map(addAvatar);
+    res.send(tweetsList.reverse());
 });
 
 app.get('/tweets/:USERNAME', (req, res) => {
