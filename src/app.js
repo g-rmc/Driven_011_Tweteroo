@@ -39,6 +39,13 @@ app.get('/tweets', (req, res) => {
     res.send(last10.reverse());
 });
 
+app.get('/tweets/:USERNAME', (req, res) => {
+    const username = req.params.USERNAME;
+    let userTweets = tweets.filter(value => value.username === username);
+    userTweets = userTweets.map(addAvatar);
+    res.send(userTweets.reverse());
+})
+
 function getTweets(from, to) {
     const arr = tweets.filter((value, index) => index <= tweets.length-from && index >= tweets.length-from-to);
     return arr
