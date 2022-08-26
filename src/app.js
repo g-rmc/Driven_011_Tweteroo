@@ -16,19 +16,27 @@ const tweets = [{
 }];
 
 app.post('/sign-up', (req, res) => {
-    users.push(req.body);
+    const user = req.body;
+    if (user.username === '' || user.avatar === ''){
+        res.status(400).send('Todos os campos são obrigatórios!');
+    }
+    users.push(user);
     res.send('OK');
 });
 
 app.post('/tweets', (req, res) => {
-    tweets.push(req.body);
+    const tweet = req.body;
+    if (tweet.username === '' || tweet.tweet === ''){
+        res.status(400).send('Todos os campos são obrigatórios!')
+    }
+    tweets.push(tweet);
     res.send('OK');
 });
 
 app.get('/tweets', (req, res) => {
     let last10 = getTweets(0,9);
     last10 = last10.map(addAvatar);
-    res.send(last10);
+    res.send(last10.reverse());
 });
 
 function getTweets(from, to) {
