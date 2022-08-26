@@ -25,4 +25,21 @@ app.post('/tweets', (req, res) => {
     res.send('OK');
 })
 
+app.get('/tweets', (req, res) => {
+    let last10 = getTweets(0,9);
+    last10 = last10.map(addAvatar);
+    res.send(last10);
+})
+
+function getTweets(from, to) {
+    const arr = tweets.filter((value, index) => index <= tweets.length-from && index >= tweets.length-from-to);
+    return arr
+}
+
+function addAvatar(value) {
+    const user = users.find(element => element.username === value.username);
+    value.avatar = user.avatar;
+    return value
+}
+
 app.listen('5000', () => console.log('Listening on 5000'));
