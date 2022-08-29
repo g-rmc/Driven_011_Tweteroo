@@ -28,6 +28,14 @@ app.post('/sign-up', (req, res) => {
         res.status(400).send('Todos os campos são obrigatórios!');
         return;
     }
+    if (!isValidHttpUrl(avatar)){
+        res.status(400).send('Endereço de imagem não é válido');
+        return;
+    }
+    if (username.indexOf(" ") !== -1){
+        res.status(400).send('Username não pode contar espaço');
+        return;
+    }
     users.push({
         id: users.length,
         username,
@@ -82,5 +90,15 @@ function addAvatar(value) {
     value.avatar = user.avatar;
     return value
 };
+
+function isValidHttpUrl(string) {
+    let url;
+    try {
+      url = new URL(string);
+    } catch (_) {
+      return false;  
+    }
+    return true;
+  }
 
 app.listen('5000', () => console.log('Listening on 5000'));
